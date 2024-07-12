@@ -1,7 +1,154 @@
-import React from 'react';
+import React, { useEffect, useState, ChangeEvent } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../state/store';
+import {
+	fetchTodos,
+	selectError,
+	selectLoading,
+	selectTodos,
+} from '../state/tasks/tasksSlice';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from '@/components/ui/select';
+
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+
+import Task from './Task';
 
 const Tasks = () => {
-	return <div>Tasks</div>;
+	const dispatch = useDispatch<AppDispatch>();
+	const tasks = useSelector(selectTodos);
+	const loading = useSelector(selectLoading);
+	const error = useSelector(selectError);
+
+	const [searchQuery, setSearchQuery] = useState('');
+	const [filteredTasks, setFilteredTasks] = useState(tasks);
+	const [selectedFilter, setSelectedFilter] = useState<string>('default'); // Initialize with a default value
+
+	useEffect(() => {
+		dispatch(fetchTodos());
+	}, [dispatch]);
+
+	useEffect(() => {
+		filterTasks(selectedFilter);
+	}, [tasks, selectedFilter]);
+
+	const handleSearch = () => {
+		const filtered = tasks.filter((task) =>
+			task.description.toLowerCase().includes(searchQuery.toLowerCase())
+		);
+		setFilteredTasks(filtered);
+	};
+
+	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+		setSearchQuery(e.target.value);
+	};
+
+	const handleFilterChange = (value: string) => {
+		setSelectedFilter(value);
+	};
+
+	const filterTasks = (filter: string) => {
+		let filtered: any[] = tasks;
+
+		switch (filter) {
+			case 'Completed':
+				filtered = tasks.filter((task) => task.completed);
+				break;
+			case 'Due Today': {
+				const today = new Date().toISOString().split('T')[0];
+				filtered = tasks.filter(
+					(task) => task.dueDate?.split('T')[0] === today
+				);
+				break;
+			}
+			case 'Not Completed':
+				filtered = tasks.filter((task) => !task.completed);
+				break;
+			case 'Default':
+				filtered = tasks; // Show all tasks initially
+				break;
+			default:
+				break;
+		}
+
+		setFilteredTasks(filtered);
+	};
+
+	if (loading) return <p>Loading...</p>;
+	if (error) return <p>Error: {error}</p>;
+
+	return (
+		<div>
+			<div className='flex flex-row items-start gap-5 border border-white p-3'>
+				<div className='flex w-full max-w-md items-center space-x-2'>
+					<Input
+						type='search'
+						placeholder='Search'
+						className='bg-slate-900 text-white'
+						value={searchQuery}
+						onChange={handleChange}
+					/>
+					<Button
+						type='submit'
+						onClick={handleSearch}
+						className='bg-white text-black'>
+						Search
+					</Button>
+				</div>
+				<div>
+					<Select
+						value={selectedFilter}
+						onValueChange={handleFilterChange}>
+						<SelectTrigger className='w-[180px] bg-slate-900'>
+							<SelectValue className='text-white'>
+								{selectedFilter === 'default'
+									? 'Select Filter'
+									: selectedFilter}
+							</SelectValue>
+						</SelectTrigger>
+						<SelectContent className='bg-slate-800 text-white'>
+							<SelectItem
+								value='Default'
+								className='hover:bg-slate-700 hover:text-white'>
+								Clear Filter
+							</SelectItem>
+							<SelectItem
+								value='Completed'
+								className='hover:bg-slate-700 hover:text-white'>
+								Completed
+							</SelectItem>
+							<SelectItem
+								value='Due Today'
+								className='hover:bg-slate-700 hover:text-white'>
+								Due Today
+							</SelectItem>
+							<SelectItem
+								value='Not Completed'
+								className='hover:bg-slate-700 hover:text-white'>
+								Not Completed
+							</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
+			</div>
+			<div>
+				<div className='flex flex-col gap-4 mt-8'>
+					{filteredTasks.map((task) => (
+						<Task
+							key={task.id}
+							task={task}
+						/>
+					))}
+				</div>
+			</div>
+		</div>
+	);
 };
 
 export default Tasks;
