@@ -28,7 +28,7 @@ const Tasks = () => {
 	const error = useSelector(selectError);
 
 	const [searchQuery, setSearchQuery] = useState('');
-	const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
+	const [filteredTasks, setFilteredTasks] = useState<any[]>([]);
 	const [selectedFilter, setSelectedFilter] = useState<string>('Default');
 
 	useEffect(() => {
@@ -55,7 +55,7 @@ const Tasks = () => {
 	};
 
 	const filterTasks = (filter: string) => {
-		let filtered: Task[] = [];
+		let filtered: any[] = [];
 
 		switch (filter) {
 			case 'Completed':
