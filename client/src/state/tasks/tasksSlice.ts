@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../store';
+import { API_URL } from '../../config';
 
-interface Todo {
+interface Task {
 	id: number;
 	description: string;
 	createdAt: string;
@@ -10,40 +11,41 @@ interface Todo {
 	completed: boolean;
 }
 
+interface TasksResponse {
+	tasks: Task[];
+}
+
 interface TasksState {
-	todos: Todo[];
+	tasks: Task[];
 	loading: boolean;
 	error: string | null;
 }
 
 const initialState: TasksState = {
-	todos: [],
+	tasks: [],
 	loading: false,
 	error: null,
 };
 
-export const fetchTodos = createAsyncThunk('tasks/fetchTodos', async () => {
-	const response = await axios.get<Todo[]>('http://localhost:3000/tasks');
-	return response.data;
+export const fetchTasks = createAsyncThunk('tasks/fetchTasks', async () => {
+	const response = await axios.get<TasksResponse>(`${API_URL}/api/v1/tasks`);
+	return response.data.tasks;
 });
 
 export const addTask = createAsyncThunk(
 	'tasks/addTask',
-	async (newTask: Omit<Todo, 'id'>) => {
-		const response = await axios.post<Todo>(
-			'http://localhost:3000/tasks',
-			newTask
-		);
+	async (newTask: Omit<Task, 'id'>) => {
+		const response = await axios.post<Task>(`${API_URL}/api/v1/tasks`, newTask);
 		return response.data;
 	}
 );
 
 export const updateTask = createAsyncThunk(
 	'tasks/updateTask',
-	async (updatedTask: Todo) => {
+	async (updatedTask: Task) => {
 		const { id, ...rest } = updatedTask;
-		const response = await axios.put<Todo>(
-			`http://localhost:3000/tasks/${id}`,
+		const response = await axios.put<Task>(
+			`${API_URL}/api/v1/tasks/${id}`,
 			rest
 		);
 		return response.data;
@@ -53,7 +55,7 @@ export const updateTask = createAsyncThunk(
 export const deleteTask = createAsyncThunk(
 	'tasks/deleteTask',
 	async (taskId: number) => {
-		await axios.delete(`http://localhost:3000/tasks/${taskId}`);
+		await axios.delete(`${API_URL}/api/v1/tasks/${taskId}`);
 		return taskId;
 	}
 );
@@ -64,38 +66,38 @@ const tasksSlice = createSlice({
 	reducers: {},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchTodos.pending, (state) => {
+			.addCase(fetchTasks.pending, (state) => {
 				state.loading = true;
 				state.error = null;
 			})
-			.addCase(fetchTodos.fulfilled, (state, action) => {
+			.addCase(fetchTasks.fulfilled, (state, action) => {
 				state.loading = false;
-				state.todos = action.payload;
+				state.tasks = action.payload;
 			})
-			.addCase(fetchTodos.rejected, (state, action) => {
+			.addCase(fetchTasks.rejected, (state, action) => {
 				state.loading = false;
 				state.error = action.error.message ?? 'Failed to fetch todos';
 			})
 			.addCase(addTask.fulfilled, (state, action) => {
-				state.todos.push(action.payload);
+				state.tasks.push(action.payload);
 			})
 			.addCase(updateTask.fulfilled, (state, action) => {
-				const updatedTodo = action.payload;
-				const existingIndex = state.todos.findIndex(
-					(todo) => todo.id === updatedTodo.id
+				const updatedTask = action.payload;
+				const existingIndex = state.tasks.findIndex(
+					(task) => task.id === updatedTask.id
 				);
 				if (existingIndex !== -1) {
-					state.todos[existingIndex] = updatedTodo;
+					state.tasks[existingIndex] = updatedTask;
 				}
 			})
 			.addCase(deleteTask.fulfilled, (state, action) => {
-				const deletedTodoId = action.payload;
-				state.todos = state.todos.filter((todo) => todo.id !== deletedTodoId);
+				const deletedTaskId = action.payload;
+				state.tasks = state.tasks.filter((task) => task.id !== deletedTaskId);
 			});
 	},
 });
 
-export const selectTodos = (state: RootState) => state.tasks.todos;
+export const selectTasks = (state: RootState) => state.tasks.tasks;
 export const selectLoading = (state: RootState) => state.tasks.loading;
 export const selectError = (state: RootState) => state.tasks.error;
 
