@@ -1,4 +1,3 @@
-import React from 'react';
 import {
 	Card,
 	CardContent,
@@ -6,7 +5,8 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from '@/components/ui/card';
+} from './ui/card';
+import { format } from 'date-fns';
 
 interface TaskProps {
 	task: {
@@ -19,6 +19,11 @@ interface TaskProps {
 }
 
 const Task: React.FC<TaskProps> = ({ task }) => {
+	const formattedCreatedAt = format(
+		new Date(task.createdAt),
+		'MMM dd, yyyy HH:mm'
+	);
+	const formattedDueDate = format(new Date(task.dueDate), 'MMM dd, yyyy');
 	return (
 		<Card>
 			<CardHeader>
@@ -26,8 +31,8 @@ const Task: React.FC<TaskProps> = ({ task }) => {
 				<CardDescription>{task.description}</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<p>Created At: {task.createdAt}</p>
-				<p>Due Date: {task.dueDate}</p>
+				<p>Created At: {formattedCreatedAt}</p>
+				<p>Due Date: {formattedDueDate}</p>
 			</CardContent>
 			<CardFooter>
 				<p>Completed: {task.completed ? 'Yes' : 'No'}</p>

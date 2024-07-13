@@ -1,10 +1,9 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import {
 	NavigationMenu,
 	NavigationMenuItem,
 	NavigationMenuList,
-} from '@/components/ui/navigation-menu';
+} from './ui/navigation-menu';
 
 const NavBar = () => {
 	return (

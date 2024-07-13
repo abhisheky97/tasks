@@ -1,37 +1,38 @@
-import React, { useEffect, useState, ChangeEvent } from 'react';
+import { useEffect, useState, ChangeEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../state/store';
 import {
-	fetchTodos,
+	fetchTasks,
 	selectError,
 	selectLoading,
-	selectTodos,
+	selectTasks,
 } from '../state/tasks/tasksSlice';
+
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '@/components/ui/select';
+} from './ui/select';
 
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { Input } from './ui/input';
+import { Button } from './ui/button';
 
 import Task from './Task';
 
 const Tasks = () => {
 	const dispatch = useDispatch<AppDispatch>();
-	const tasks = useSelector(selectTodos);
+	const tasks = useSelector(selectTasks);
 	const loading = useSelector(selectLoading);
 	const error = useSelector(selectError);
 
 	const [searchQuery, setSearchQuery] = useState('');
-	const [filteredTasks, setFilteredTasks] = useState(tasks);
-	const [selectedFilter, setSelectedFilter] = useState<string>('default'); // Initialize with a default value
+	const [filteredTasks, setFilteredTasks] = useState<any[]>([]);
+	const [selectedFilter, setSelectedFilter] = useState<string>('Default');
 
 	useEffect(() => {
-		dispatch(fetchTodos());
+		dispatch(fetchTasks());
 	}, [dispatch]);
 
 	useEffect(() => {
@@ -54,7 +55,7 @@ const Tasks = () => {
 	};
 
 	const filterTasks = (filter: string) => {
-		let filtered: any[] = tasks;
+		let filtered: any[] = [];
 
 		switch (filter) {
 			case 'Completed':
@@ -70,10 +71,8 @@ const Tasks = () => {
 			case 'Not Completed':
 				filtered = tasks.filter((task) => !task.completed);
 				break;
-			case 'Default':
-				filtered = tasks; // Show all tasks initially
-				break;
 			default:
+				filtered = tasks;
 				break;
 		}
 
@@ -95,7 +94,7 @@ const Tasks = () => {
 						onChange={handleChange}
 					/>
 					<Button
-						type='submit'
+						type='button'
 						onClick={handleSearch}
 						className='bg-white text-black'>
 						Search
@@ -107,7 +106,7 @@ const Tasks = () => {
 						onValueChange={handleFilterChange}>
 						<SelectTrigger className='w-[180px] bg-slate-900'>
 							<SelectValue className='text-white'>
-								{selectedFilter === 'default'
+								{selectedFilter === 'Default'
 									? 'Select Filter'
 									: selectedFilter}
 							</SelectValue>
