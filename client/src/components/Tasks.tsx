@@ -141,7 +141,7 @@ const Tasks = () => {
 				</div>
 			</div>
 			<div>
-				<div className='flex flex-col gap-4 mt-8'>
+				<div className='flex flex-col gap-4 max-h-[89vh] overflow-y-auto bg-slate-900 mt-2 p-4 border border-white p-3'>
 					{filteredTasks.map((task) => (
 						<Task
 							key={task.id}
