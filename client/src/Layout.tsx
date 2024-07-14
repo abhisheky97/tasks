@@ -7,7 +7,7 @@ function Layout() {
 			<div className='hidden md:block md:col-span-2 border-[1px] border-white p-3'>
 				<NavBar />
 			</div>
-			<div className='text-white col-span-10 border-[1px]  border-white p-3'>
+			<div className='text-white col-span-10 border-[1px] border-white p-3'>
 				<Outlet />
 			</div>
 		</div>
