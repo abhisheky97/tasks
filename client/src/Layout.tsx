@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 function Layout() {
 	return (
-		<div className='bg-slate-900 w-full h-screen grid grid-cols-12 gap-4 p-3'>
+		<div className='bg-slate-900 w-full h-screen grid grid-cols-12 gap-4 p-3 overflow-y-hidden'>
 			<div className='hidden md:block md:col-span-2 border-[1px] border-white p-3'>
 				<NavBar />
 			</div>
