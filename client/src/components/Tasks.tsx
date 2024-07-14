@@ -20,6 +20,7 @@ import { Input } from './ui/input';
 import { Button } from './ui/button';
 
 import Task from './Task';
+import AddTask from './AddTask';
 
 const Tasks = () => {
 	const dispatch = useDispatch<AppDispatch>();
@@ -104,7 +105,7 @@ const Tasks = () => {
 					<Select
 						value={selectedFilter}
 						onValueChange={handleFilterChange}>
-						<SelectTrigger className='w-[180px] bg-slate-900'>
+						<SelectTrigger className='w-[140px] bg-slate-900'>
 							<SelectValue className='text-white'>
 								{selectedFilter === 'Default'
 									? 'Select Filter'
@@ -134,6 +135,9 @@ const Tasks = () => {
 							</SelectItem>
 						</SelectContent>
 					</Select>
+				</div>
+				<div>
+					<AddTask />
 				</div>
 			</div>
 			<div>
